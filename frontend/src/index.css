@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --mf-primary: #2563eb;
+  --mf-primary-hover: #1d4ed8;
+  --mf-navy: #0b1f33;
+  --mf-navy-soft: #0f2742;
+  --mf-bg: #f5f7fb;
+  --mf-surface: #ffffff;
+  --mf-border: #e2e8f0;
+  --mf-border-strong: #cbd5e1;
+  --mf-text: #0f172a;
+  --mf-text-secondary: #64748b;
+  --mf-text-muted: #94a3b8;
+  --mf-success: #16a34a;
+  --mf-success-soft: #ecfdf5;
+  --mf-warning: #d97706;
+  --mf-warning-soft: #fffbeb;
+  --mf-danger: #dc2626;
+  --mf-danger-soft: #fef2f2;
+  font-family: "Noto Sans Thai", "Inter", system-ui, -apple-system, sans-serif;
+  background: var(--mf-bg);
+  color: var(--mf-text);
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  background: var(--mf-bg);
+  overflow-x: hidden;
+}
+
+#root { min-height: 100vh; }
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+.mf-money-input.ant-input-number { width: 100%; }
+.mf-money-input .ant-input-number-input {
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.mf-card {
+  background: var(--mf-surface);
+  border: 1px solid var(--mf-border);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.mf-app-header.ant-layout-header {
+  line-height: normal;
+}
+
+@media (max-width: 1023px) {
+  .mf-app-header.ant-layout-header {
+    height: 56px;
+    padding-inline: 12px;
+  }
+}
+
+::selection { background: rgba(37, 99, 235, 0.18); }

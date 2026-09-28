@@ -1,0 +1,13 @@
+{
+  "ConnectionStrings": {
+    "MoneyFlowDb": "Server=.\\SQLEXPRESS;Database=MoneyFlowDb;Trusted_Connection=True;TrustServerCertificate=True;"
+  },
+  "Jwt": {
+    "Secret": "local-dev-secret-change-this-to-32chars",
+    "Issuer": "MoneyFlow",
+    "ExpiryDays": 7
+  },
+  "Cors": {
+    "AllowedOrigins": [ "http://localhost:5173" ]
+  }
+}

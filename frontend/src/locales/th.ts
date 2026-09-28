@@ -1,0 +1,189 @@
+export const th = {
+  brand: "MoneyFlow",
+  tagline: "จัดการเงินส่วนตัวอย่างเป็นระบบ",
+  nav: {
+    dashboard: "ภาพรวม",
+    income: "รายรับ",
+    expenses: "รายจ่าย",
+    budgets: "งบประมาณ",
+    savings: "เงินออม",
+    manageGroup: "จัดการ",
+    categories: "หมวดหมู่",
+    recurring: "รายการประจำ",
+    analyzeGroup: "วิเคราะห์",
+    reports: "รายงาน",
+    more: "เพิ่มเติม",
+    logout: "ออกจากระบบ",
+    account: "บัญชี",
+    settings: "ตั้งค่า"
+  },
+  common: {
+    save: "บันทึก",
+    cancel: "ยกเลิก",
+    edit: "แก้ไข",
+    delete: "ลบ",
+    retry: "ลองอีกครั้ง",
+    name: "ชื่อรายการ",
+    category: "หมวดหมู่",
+    amount: "จำนวนเงิน",
+    date: "วันที่",
+    note: "หมายเหตุ",
+    noteOptional: "หมายเหตุ (ไม่บังคับ)",
+    active: "ใช้งาน",
+    saved: "บันทึกสำเร็จ",
+    created: "สร้างสำเร็จ",
+    added: "เพิ่มรายการสำเร็จ",
+    all: "ทั้งหมด",
+    undo: "เลิกทำ",
+    remaining: "เหลือ",
+    genericError: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+  },
+  confirmDelete: {
+    title: (name: string) => `ลบ "${name}" ใช่หรือไม่`,
+    content: "การลบนี้ไม่สามารถย้อนกลับได้",
+    okText: "ลบ",
+    cancelText: "ยกเลิก"
+  },
+  quickAdd: {
+    button: "เพิ่มรายการด่วน",
+    title: "เพิ่มรายการด่วน",
+    category: "หมวดหมู่",
+    amount: "จำนวนเงิน",
+    description: "รายละเอียด",
+    descriptionPlaceholder: "เช่น ของชำสัปดาห์ที่ 3",
+    submit: "เพิ่มรายการ",
+    addedTo: (cat: string) => `เพิ่มลง${cat}แล้ว`
+  },
+  login: {
+    login: "เข้าสู่ระบบ",
+    register: "สมัครสมาชิก",
+    email: "อีเมล",
+    password: "รหัสผ่าน",
+    displayName: "ชื่อที่แสดง",
+    toRegister: "สร้างบัญชีใหม่",
+    toLogin: "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ",
+    invalidCredentials: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+    emailTaken: "อีเมลนี้ถูกใช้งานแล้ว"
+  },
+  dashboard: {
+    remaining: "เงินคงเหลือ",
+    income: "รายรับ",
+    expenses: "รายจ่าย",
+    savings: "เงินออม",
+    unpaidWidget: "รายการที่ยังไม่ชำระ",
+    paidCount: (n: number) => `ชำระแล้ว ${n} รายการ`,
+    unpaidCount: (n: number) => `ยังไม่ชำระ ${n} รายการ`,
+    viewUnpaid: "ดูรายการที่ยังไม่ชำระ",
+    monthProgress: (d: number, total: number, pct: number) => `วันที่ ${d} จาก ${total} วัน (${pct}%)`,
+    noMonth: (label: string) => `ยังไม่มีข้อมูลของเดือน ${label}`,
+    startEmpty: "เริ่มเดือนใหม่",
+    copyRecurring: "คัดลอกรายการประจำ",
+    chartIncomeExpenseSavings: "รายรับ เทียบ รายจ่าย เทียบ เงินออม",
+    chartBreakdown: "สัดส่วนรายจ่ายตามหมวดหมู่",
+    chartTrend: "แนวโน้มเงินคงเหลือ",
+    chartFixedVariable: "รายจ่ายคงที่ เทียบ ผันแปร",
+    emptyAllTitle: "ยังไม่มีรายการในเดือนนี้",
+    emptyAllCta: "เพิ่มรายรับ"
+  },
+  income: {
+    title: "รายรับ",
+    addBtn: "+ เพิ่มรายรับ",
+    add: "เพิ่มรายรับ",
+    edit: "แก้ไขรายรับ",
+    empty: "ยังไม่มีรายการรายรับในเดือนนี้",
+    isRecurring: "รายการประจำ",
+    columns: { name: "ชื่อรายการ", category: "หมวดหมู่", amount: "จำนวนเงิน", date: "วันที่", active: "ใช้งาน" }
+  },
+  expenses: {
+    title: "รายจ่าย",
+    addBtn: "+ เพิ่มรายจ่าย",
+    add: "เพิ่มรายจ่าย",
+    edit: "แก้ไขรายจ่าย",
+    empty: "ยังไม่มีรายการรายจ่ายในเดือนนี้",
+    dueDate: "วันครบกำหนด",
+    classification: "ประเภทรายจ่าย",
+    filters: { all: "ทั้งหมด", fixed: "คงที่", variable: "ผันแปร", paid: "ชำระแล้ว", unpaid: "ยังไม่ชำระ" },
+    columns: { name: "ชื่อรายการ", category: "หมวดหมู่", classification: "ประเภท", amount: "จำนวนเงิน", due: "กำหนดชำระ", paid: "สถานะ", order: "ลำดับ" }
+  },
+  budgets: {
+    title: "งบประมาณ",
+    setAllocation: "+ ตั้งงบประมาณ",
+    setAllocationTitle: "ตั้งงบประมาณ",
+    allocated: "วงเงินที่ตั้งไว้",
+    addTxn: "เพิ่มรายการ",
+    empty: "ยังไม่มีงบประมาณในเดือนนี้",
+    dailyPace: (amount: string) => `วันละ ${amount}`
+  },
+  savings: {
+    title: "เงินออม",
+    subtitle: "ติดตามเป้าหมายและความคืบหน้าการออมเงิน",
+    newGoal: "+ เพิ่มเป้าหมายการออม",
+    newGoalTitle: "เพิ่มเป้าหมายการออม",
+    contribute: "+ เพิ่มเงินออม",
+    contributeTitle: "เพิ่มเงินออม",
+    goalName: "ชื่อเป้าหมาย",
+    targetAmount: "จำนวนเงินเป้าหมาย",
+    targetDate: "วันที่ต้องการถึงเป้าหมาย",
+    plannedMonthly: "แผนออมต่อเดือน",
+    planLabel: (amount: string) => `แผนออมเดือนละ ${amount}`,
+    ofTarget: (amount: string) => `จากเป้าหมาย ${amount}`,
+    emptyTitle: "ยังไม่มีเป้าหมายการออม เริ่มสร้างเป้าหมายแรกของคุณ"
+  },
+  categories: {
+    title: "หมวดหมู่",
+    add: "+ เพิ่มหมวดหมู่",
+    addTitle: "เพิ่มหมวดหมู่",
+    name: "ชื่อหมวดหมู่",
+    type: "ประเภท",
+    types: { income: "รายรับ", expense: "รายจ่าย", saving: "เงินออม" },
+    classification: "ประเภทรายจ่าย",
+    classifications: { fixed: "คงที่", variable: "ผันแปร" },
+    tracking: "การติดตาม",
+    trackingModes: { simple: "บิลทั่วไป", budget: "งบเทียบยอดใช้จริง" }
+  },
+  recurring: {
+    title: "รายการประจำ",
+    subtitle: "รายการเหล่านี้จะถูกคัดลอกอัตโนมัติเมื่อสร้างเดือนใหม่ด้วย “คัดลอกรายการประจำ”",
+    add: "+ เพิ่มรายการประจำ",
+    addTitle: "เพิ่มรายการประจำ",
+    type: "ประเภทรายการ",
+    dueDay: "วันครบกำหนด (1-31)",
+    savingGoal: "เป้าหมายเงินออม",
+    groups: {
+      Income: "รายรับประจำ",
+      ExpenseEntry: "รายจ่ายประจำ",
+      BudgetAllocation: "งบประมาณประจำ",
+      SavingContribution: "เงินออมประจำ"
+    } as Record<"Income" | "ExpenseEntry" | "BudgetAllocation" | "SavingContribution", string>
+  },
+  reports: {
+    title: "รายงาน",
+    range: { m3: "3 เดือน", m6: "6 เดือน", m12: "12 เดือน" },
+    columns: { month: "เดือน", income: "รายรับ", expenses: "รายจ่าย", savings: "เงินออม", remaining: "คงเหลือ" }
+  },
+  status: {
+    paid: "ชำระแล้ว",
+    unpaid: "ยังไม่ชำระ",
+    overBudget: "เกินงบประมาณ",
+    onBudget: "อยู่ในงบประมาณ"
+  },
+  chart: {
+    income: "รายรับ",
+    expenses: "รายจ่าย",
+    savings: "เงินออม",
+    remaining: "คงเหลือ",
+    fixed: "คงที่",
+    variable: "ผันแปร"
+  },
+  empty: {
+    createMonthFirst: "กรุณาสร้างเดือนก่อนจากหน้าภาพรวม"
+  },
+  settings: {
+    title: "ตั้งค่า",
+    intro: "รอบเดือนเริ่มวันที่เงินเดือนออก วันที่ 26 ของเดือนนี้คือวันที่ 1 ของรอบ",
+    periodStartDay: "วันเริ่มรอบเดือน",
+    periodStartDayHint: "วันที่เงินเดือนออกตามปฏิทิน เช่น 26",
+    skipWeekend: "เลื่อนถ้าตรงเสาร์–อาทิตย์",
+    skipWeekendHint: "เสาร์เลื่อนศุกร์ก่อนหน้า อาทิตย์เลื่อนศุกร์ก่อนหน้าสองวัน"
+  }
+};
