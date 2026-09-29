@@ -39,7 +39,7 @@ export function LoginPage() {
           <Typography.Title level={3} className="!mb-1 !text-[var(--mf-navy)]">{th.brand}</Typography.Title>
           <Typography.Text className="text-[var(--mf-text-secondary)]">{th.tagline}</Typography.Text>
         </div>
-        <Form layout="vertical" onFinish={onFinish} initialValues={{ email: "demo@moneyflow.app" }} requiredMark={false}>
+        <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
           {mode === "register" && (
             <Form.Item name="displayName" label={th.login.displayName} rules={[{ required: true }]}>
               <Input size="large" prefix={<UserOutlined className="text-[var(--mf-text-muted)]" />} />
