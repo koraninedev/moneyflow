@@ -1,5 +1,6 @@
 export const th = {
-  brand: "MoneyFlow",
+  brand: "ระบบบริหารการเงินส่วนบุคคล",
+  brandLockup: { line1: "ระบบบริหาร", line2: "การเงินส่วนบุคคล" },
   tagline: "จัดการเงินส่วนตัวอย่างเป็นระบบ",
   nav: {
     dashboard: "ภาพรวม",
@@ -15,7 +16,9 @@ export const th = {
     more: "เพิ่มเติม",
     logout: "ออกจากระบบ",
     account: "บัญชี",
-    settings: "ตั้งค่า"
+    settings: "ตั้งค่า",
+    collapseNav: "พับเมนู",
+    expandNav: "ขยายเมนู"
   },
   common: {
     save: "บันทึก",
@@ -70,16 +73,19 @@ export const th = {
     income: "รายรับ",
     expenses: "รายจ่าย",
     savings: "เงินออม",
-    unpaidWidget: "รายการที่ยังไม่ชำระ",
+    unpaidWidget: "รายการค่าใช้จ่าย",
+    unpaidWidgetHint: "ติดตามสถานะรายจ่ายที่ต้องชำระเงิน",
+    unpaidWidgetTotal: (n: number) => `${n} รายการ`,
     paidCount: (n: number) => `ชำระแล้ว ${n} รายการ`,
     unpaidCount: (n: number) => `ยังไม่ชำระ ${n} รายการ`,
-    viewUnpaid: "ดูรายการที่ยังไม่ชำระ",
+    viewUnpaid: "ดูรายการ",
     monthProgress: (d: number, total: number, pct: number) => `วันที่ ${d} จาก ${total} วัน (${pct}%)`,
     noMonth: (label: string) => `ยังไม่มีข้อมูลของเดือน ${label}`,
     startEmpty: "เริ่มเดือนใหม่",
     copyRecurring: "คัดลอกรายการประจำ",
     chartIncomeExpenseSavings: "รายรับ เทียบ รายจ่าย เทียบ เงินออม",
     chartBreakdown: "สัดส่วนรายจ่ายตามหมวดหมู่",
+    chartBreakdownEmpty: "ยังไม่มีรายจ่ายในเดือนนี้",
     chartTrend: "แนวโน้มเงินคงเหลือ",
     chartFixedVariable: "รายจ่ายคงที่ เทียบ ผันแปร",
     emptyAllTitle: "ยังไม่มีรายการในเดือนนี้",
@@ -103,7 +109,7 @@ export const th = {
     dueDate: "วันครบกำหนด",
     classification: "ประเภทรายจ่าย",
     filters: { all: "ทั้งหมด", fixed: "คงที่", variable: "ผันแปร", paid: "ชำระแล้ว", unpaid: "ยังไม่ชำระ" },
-    columns: { name: "ชื่อรายการ", category: "หมวดหมู่", classification: "ประเภท", amount: "จำนวนเงิน", due: "กำหนดชำระ", paid: "สถานะ", order: "ลำดับ" }
+    columns: { name: "ชื่อรายการ", category: "หมวดหมู่", classification: "ประเภท", amount: "จำนวนเงิน", due: "กำหนดชำระ", paid: "สถานะการชำระ", order: "ลำดับ" }
   },
   budgets: {
     title: "งบประมาณ",
@@ -112,7 +118,11 @@ export const th = {
     allocated: "วงเงินที่ตั้งไว้",
     addTxn: "เพิ่มรายการ",
     empty: "ยังไม่มีงบประมาณในเดือนนี้",
-    dailyPace: (amount: string) => `วันละ ${amount}`
+    paceLabel: "อัตราการใช้ที่เหลือ",
+    paceDay: "รายวัน",
+    paceWeek: "รายสัปดาห์",
+    dailyPace: (amount: string) => `เฉลี่ยวันละ ${amount}`,
+    weeklyPace: (amount: string) => `เฉลี่ยสัปดาห์ละ ${amount}`
   },
   savings: {
     title: "เงินออม",

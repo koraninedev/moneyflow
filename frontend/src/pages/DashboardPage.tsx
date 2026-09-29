@@ -1,15 +1,19 @@
-import { Button, Progress, Skeleton, Tag } from "antd";
+import { RightOutlined } from "@ant-design/icons";
+import { Button, Card, Progress, Skeleton, Tag } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { monthsApi, reportsApi } from "../api/resources";
+import type { CategoryBudget } from "../api/types";
 import { BudgetProgressCard } from "../components/BudgetProgressCard";
+import { BudgetTxnDrawer } from "../components/BudgetTxnDrawer";
 import { EmptyState } from "../components/EmptyState";
 import { StatCard } from "../components/StatCard";
 import { useCurrentMonth } from "../hooks/useCurrentMonth";
 import { formatMonthLabel, formatShortDate, formatShortMonthLabel } from "../lib/buddhist-era";
 import { translateCategoryName } from "../lib/categoryLabels";
-import { chartMoney } from "../lib/money";
+import { chartMoney, formatMoney } from "../lib/money";
 import { th } from "../locales/th";
 import { chartColors } from "../theme/tokens";
 
@@ -23,6 +27,7 @@ export function DashboardPage() {
   });
   const missing = isError && !data;
   const id = data?.monthlyPeriodId;
+  const [activeBudget, setActiveBudget] = useState<CategoryBudget | null>(null);
   const trend = useQuery({ queryKey: ["trend", 6], queryFn: () => reportsApi.trend(6), enabled: !!id });
   const breakdown = useQuery({ queryKey: ["breakdown", id], queryFn: () => reportsApi.breakdown(id!), enabled: !!id });
   const fv = useQuery({ queryKey: ["fv", id], queryFn: () => reportsApi.fixedVsVariable(id!), enabled: !!id });
@@ -41,10 +46,8 @@ export function DashboardPage() {
   }
   if (!data) return <Button onClick={() => refetch()}>{th.common.retry}</Button>;
 
-  const food = data.categoryBudgets.find((c) => c.name === "Food");
-  const reward = data.categoryBudgets.find((c) => c.name === "Reward");
   const barData = [{ name: formatShortMonthLabel(data.year, data.month), [th.chart.income]: data.totalIncome, [th.chart.expenses]: data.totalExpenses, [th.chart.savings]: data.totalSavings }];
-  const pieData = (breakdown.data ?? []).map((x) => ({ name: translateCategoryName(x.name), value: x.amount }));
+  const pieData = (breakdown.data ?? []).filter((x) => x.amount > 0).map((x) => ({ name: translateCategoryName(x.name), value: x.amount }));
   const lineData = (trend.data ?? []).map((t) => ({ name: formatShortMonthLabel(t.year, t.month), [th.chart.remaining]: t.remaining }));
   const fvData = [
     { name: th.chart.fixed, amount: fv.data?.fixed ?? data.fixedExpenses },
@@ -65,16 +68,23 @@ export function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {food && <BudgetProgressCard name={translateCategoryName(food.name)} allocated={food.allocated} used={food.used} remainingDays={data.monthProgress.remainingDays} />}
-        {reward && <BudgetProgressCard name={translateCategoryName(reward.name)} allocated={reward.allocated} used={reward.used} remainingDays={data.monthProgress.remainingDays} />}
-        <div className="mf-card p-4">
-          <div className="text-sm font-medium text-[var(--mf-text-secondary)]">{th.dashboard.unpaidWidget}</div>
-          <div className="mt-2 flex items-center gap-2">
-            <Tag color="success" className="m-0">{th.dashboard.paidCount(data.paidExpenseCount)}</Tag>
-            <Tag color="warning" className="m-0">{th.dashboard.unpaidCount(data.unpaidExpenseCount)}</Tag>
+        <Card className="mf-card h-full" styles={{ body: { padding: 16 } }}>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <span className="font-medium text-[var(--mf-text)]">{th.dashboard.unpaidWidget}</span>
+            <span className="tabular text-sm text-[var(--mf-text-secondary)]">{th.dashboard.unpaidWidgetTotal(data.paidExpenseCount + data.unpaidExpenseCount)}</span>
           </div>
-          <Button type="link" className="mt-1 px-0" onClick={() => nav("/expenses")}>{th.dashboard.viewUnpaid}</Button>
-        </div>
+          <p className="m-0 truncate text-xs leading-[22px] text-[var(--mf-text-secondary)]">{th.dashboard.unpaidWidgetHint}</p>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-wrap gap-2">
+              <Tag color="success" className="m-0">{th.dashboard.paidCount(data.paidExpenseCount)}</Tag>
+              <Tag color="warning" className="m-0">{th.dashboard.unpaidCount(data.unpaidExpenseCount)}</Tag>
+            </div>
+            <Button type="text" size="small" className="shrink-0 !h-auto !px-1.5 font-medium text-[var(--mf-primary)]" onClick={() => nav("/expenses")}>{th.dashboard.viewUnpaid}<RightOutlined className="ml-1 text-[10px]" /></Button>
+          </div>
+        </Card>
+        {data.categoryBudgets.map((b) => (
+          <BudgetProgressCard key={b.categoryId} name={translateCategoryName(b.name)} allocated={b.allocated} used={b.used} remainingDays={data.monthProgress.remainingDays} onClick={() => setActiveBudget(b)} />
+        ))}
       </div>
 
       <div className="mf-card p-4">
@@ -98,15 +108,7 @@ export function DashboardPage() {
             <Bar dataKey={th.chart.savings} fill={chartColors.savings} radius={[4, 4, 0, 0]} />
           </BarChart>
         </ChartCard>
-        <ChartCard title={th.dashboard.chartBreakdown}>
-          <PieChart>
-            <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={90} label>
-              {pieData.map((_, i) => <Cell key={i} fill={chartColors.sequence[i % chartColors.sequence.length]} />)}
-            </Pie>
-            <Tooltip formatter={chartMoney} />
-            <Legend />
-          </PieChart>
-        </ChartCard>
+        <PieBreakdownCard title={th.dashboard.chartBreakdown} data={pieData} />
         <ChartCard title={th.dashboard.chartTrend}>
           <LineChart data={lineData}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--mf-border)" />
@@ -132,6 +134,7 @@ export function DashboardPage() {
       {data.totalIncome === 0 && data.totalExpenses === 0 && (
         <EmptyState description={th.dashboard.emptyAllTitle} cta={`+ ${th.dashboard.emptyAllCta}`} onClick={() => nav("/income")} />
       )}
+      <BudgetTxnDrawer open={!!activeBudget} title={activeBudget ? translateCategoryName(activeBudget.name) : ""} monthlyPeriodId={id} categoryId={activeBudget?.categoryId} onClose={() => setActiveBudget(null)} />
     </div>
   );
 }
@@ -141,6 +144,41 @@ function ChartCard({ title, children }: { title: string; children: React.ReactEl
     <div className="mf-card h-72 p-4">
       <div className="mb-2 text-sm font-semibold text-[var(--mf-text)]">{title}</div>
       <ResponsiveContainer width="100%" height="88%">{children}</ResponsiveContainer>
+    </div>
+  );
+}
+
+function PieBreakdownCard({ title, data }: { title: string; data: { name: string; value: number }[] }) {
+  const total = data.reduce((sum, x) => sum + x.value, 0);
+  return (
+    <div className="mf-card flex h-72 flex-col p-4">
+      <div className="mb-2 text-sm font-semibold text-[var(--mf-text)]">{title}</div>
+      {data.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center text-sm text-[var(--mf-text-secondary)]">{th.dashboard.chartBreakdownEmpty}</div>
+      ) : (
+        <div className="flex min-h-0 flex-1">
+          <div className="w-[46%]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={48} outerRadius={78} paddingAngle={2} stroke="var(--mf-surface)">
+                  {data.map((x, i) => <Cell key={x.name} fill={chartColors.sequence[i % chartColors.sequence.length]} />)}
+                </Pie>
+                <Tooltip formatter={chartMoney} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex w-[54%] flex-col justify-center gap-1.5 overflow-auto pl-1 pr-1">
+            {data.map((x, i) => (
+              <div key={x.name} className="flex items-center gap-2 text-xs">
+                <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: chartColors.sequence[i % chartColors.sequence.length] }} />
+                <span className="min-w-0 flex-1 truncate text-[var(--mf-text)]">{x.name}</span>
+                <span className="shrink-0 text-[var(--mf-text-muted)]">{total > 0 ? `${Math.round((x.value / total) * 100)}%` : ""}</span>
+                <span className="w-[5.75rem] shrink-0 tabular text-right text-[var(--mf-text-secondary)]">{formatMoney(x.value)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

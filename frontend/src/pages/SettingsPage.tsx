@@ -7,7 +7,7 @@ import { useAuthStore } from "../stores/auth.store";
 import { useMonthStore } from "../stores/month.store";
 import { DEFAULT_PAYDAY_DAY, periodContaining } from "../lib/pay-cycle";
 
-const dayOptions = Array.from({ length: 28 }, (_, i) => ({ value: i + 1, label: String(i + 1) }));
+const dayOptions = Array.from({ length: 31 }, (_, i) => ({ value: i + 1, label: String(i + 1) }));
 
 export function SettingsPage() {
   const user = useAuthStore((s) => s.user);

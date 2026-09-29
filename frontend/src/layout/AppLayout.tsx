@@ -1,11 +1,13 @@
-import { ArrowDownOutlined, ArrowUpOutlined, BankOutlined, BarChartOutlined, DashboardOutlined, LogoutOutlined, MenuOutlined, PieChartOutlined, PlusOutlined, ReloadOutlined, SettingOutlined, TagsOutlined, WalletOutlined } from "@ant-design/icons";
-import { Avatar, Button, Drawer, Dropdown, Layout, Menu } from "antd";
+import { ArrowDownOutlined, ArrowUpOutlined, BankOutlined, BarChartOutlined, DashboardOutlined, LogoutOutlined, MenuFoldOutlined, MenuOutlined, PieChartOutlined, PlusOutlined, ReloadOutlined, SettingOutlined, TagsOutlined, WalletOutlined } from "@ant-design/icons";
+import { Avatar, Button, Drawer, Dropdown, Layout, Menu, Tooltip } from "antd";
 import { useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { MonthSwitcher } from "../components/MonthSwitcher";
 import { QuickAddSheet } from "../components/QuickAddSheet";
 import { th } from "../locales/th";
 import { useAuthStore } from "../stores/auth.store";
+
+const SIDEBAR_KEY = "mf.sidebarCollapsed";
 
 const navItems = [
   { key: "/", label: th.nav.dashboard, icon: <DashboardOutlined /> },
@@ -41,21 +43,49 @@ export function AppLayout() {
   const [quick, setQuick] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [more, setMore] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(SIDEBAR_KEY) === "1");
+  const setSidebarCollapsed = (v: boolean) => {
+    setCollapsed(v);
+    localStorage.setItem(SIDEBAR_KEY, v ? "1" : "0");
+  };
   const go = (key: string) => nav(key);
   const initials = (user?.displayName ?? "?").trim().slice(0, 1).toUpperCase();
   const tabCls = (active: boolean) =>
     `flex min-w-0 flex-1 flex-col items-center gap-0.5 py-1 text-[11px] font-medium ${active ? "text-[var(--mf-primary)]" : "text-[var(--mf-text-secondary)]"}`;
   const moreActive = !["/", "/budgets", "/savings"].includes(loc.pathname);
+  const desktopMenu = collapsed
+    ? allItems.map((i) => ({ key: i.key, icon: i.icon, label: i.label, title: i.label }))
+    : menuItems;
 
   const sidebarContent = (
     <>
-      <div className="flex items-center gap-2 px-5 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--mf-primary)] text-white">
-          <WalletOutlined />
-        </div>
-        <span className="text-lg font-semibold tracking-tight text-[var(--mf-navy)]">{th.brand}</span>
+      <div className={`flex items-center py-4 ${collapsed ? "justify-center px-2" : "gap-1 px-3"}`}>
+        {collapsed ? (
+          <Tooltip title={th.nav.expandNav} placement="right">
+            <button type="button" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--mf-primary)] text-white" aria-label={th.nav.expandNav} onClick={() => setSidebarCollapsed(false)}>
+              <WalletOutlined />
+            </button>
+          </Tooltip>
+        ) : (
+          <>
+            <div className="flex min-w-0 flex-1 items-center gap-2.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--mf-primary)] text-white">
+                <WalletOutlined />
+              </div>
+              <div className="min-w-0 leading-[1.2]">
+                <div className="text-[18px] font-semibold tracking-tight text-[var(--mf-navy)]">{th.brandLockup.line1}</div>
+                <div className="text-[16px] font-normal tracking-tight text-[var(--mf-navy)]">{th.brandLockup.line2}</div>
+              </div>
+            </div>
+            <Tooltip title={th.nav.collapseNav} placement="bottom">
+              <button type="button" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[var(--mf-navy)] hover:bg-[var(--mf-bg)]" aria-label={th.nav.collapseNav} onClick={() => setSidebarCollapsed(true)}>
+                <MenuFoldOutlined style={{ fontSize: 16 }} />
+              </button>
+            </Tooltip>
+          </>
+        )}
       </div>
-      <Menu mode="inline" selectedKeys={[loc.pathname]} items={menuItems} onClick={(e) => go(e.key)} className="border-none px-2" style={{ background: "transparent" }} />
+      <Menu mode="inline" inlineCollapsed={collapsed} selectedKeys={[loc.pathname]} items={desktopMenu} onClick={(e) => go(e.key)} className={`border-none ${collapsed ? "px-1" : "px-2"}`} style={{ background: "transparent" }} />
     </>
   );
 
@@ -63,9 +93,13 @@ export function AppLayout() {
     <Layout className="min-h-screen" style={{ background: "var(--mf-bg)" }}>
       <Layout.Sider
         width={252}
-        className="hidden border-r border-[var(--mf-border)] lg:block"
+        collapsedWidth={72}
+        collapsed={collapsed}
+        collapsible
+        trigger={null}
+        className="mf-sider hidden border-r border-[var(--mf-border)] lg:block"
         theme="light"
-        style={{ background: "var(--mf-surface)", position: "sticky", top: 0, height: "100vh", overflow: "auto" }}
+        style={{ background: "var(--mf-surface)", position: "sticky", top: 0, height: "100vh" }}
       >
         {sidebarContent}
       </Layout.Sider>
@@ -132,7 +166,19 @@ export function AppLayout() {
         </nav>
       </Layout>
       <QuickAddSheet open={quick} onClose={() => setQuick(false)} />
-      <Drawer title={th.brand} placement="left" open={mobileNav} onClose={() => setMobileNav(false)} width={272} styles={{ body: { padding: 0 } }}>
+      <Drawer
+        title={
+          <div className="leading-[1.2]">
+            <div className="text-sm font-semibold text-[var(--mf-navy)]">{th.brandLockup.line1}</div>
+            <div className="text-xs font-medium text-[var(--mf-text-secondary)]">{th.brandLockup.line2}</div>
+          </div>
+        }
+        placement="left"
+        open={mobileNav}
+        onClose={() => setMobileNav(false)}
+        width={272}
+        styles={{ body: { padding: 0 } }}
+      >
         <Menu mode="inline" selectedKeys={[loc.pathname]} items={menuItems} onClick={(e) => { go(e.key); setMobileNav(false); }} className="border-none" />
         <div className="px-4 py-3">
           <Button danger block icon={<LogoutOutlined />} onClick={() => { logout(); nav("/login"); }}>{th.nav.logout}</Button>

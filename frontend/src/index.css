@@ -53,6 +53,26 @@ body {
   line-height: normal;
 }
 
+.mf-sider.ant-layout-sider {
+  z-index: 20;
+}
+.mf-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.mf-sider .ant-menu {
+  flex: 1;
+  overflow: auto;
+}
+.mf-sider .ant-menu-item,
+.mf-sider .ant-menu-submenu-title {
+  border-radius: 8px;
+}
+.mf-sider.ant-layout-sider-collapsed .ant-menu-item-group-title {
+  display: none;
+}
+
 @media (max-width: 1023px) {
   .mf-app-header.ant-layout-header {
     height: 56px;

@@ -1,16 +1,15 @@
-import { Button, Drawer, Form, Input, Modal, Select, message } from "antd";
+import { Button, Form, Modal, Segmented, Select, message } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { budgetsApi, categoriesApi, txnsApi } from "../api/resources";
-import type { Budget, Txn } from "../api/types";
+import { budgetsApi, categoriesApi } from "../api/resources";
+import type { Budget } from "../api/types";
 import { BudgetProgressCard } from "../components/BudgetProgressCard";
+import { BudgetTxnDrawer } from "../components/BudgetTxnDrawer";
 import { MoneyInput } from "../components/MoneyInput";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader } from "../components/PageHeader";
 import { useCurrentMonth } from "../hooks/useCurrentMonth";
 import { translateCategoryName } from "../lib/categoryLabels";
-import { todayDateOnly } from "../lib/dates";
-import { formatMoney } from "../lib/money";
 import { th } from "../locales/th";
 
 export function BudgetsPage() {
@@ -22,27 +21,36 @@ export function BudgetsPage() {
   const budgetCats = (cats.data ?? []).filter((c) => c.trackingMode === "BudgetVsActual");
   const [allocOpen, setAllocOpen] = useState(false);
   const [active, setActive] = useState<Budget | null>(null);
-  const txns = useQuery({ queryKey: ["txns", id, active?.categoryId], queryFn: () => txnsApi.list(id!, active!.categoryId), enabled: !!id && !!active });
+  const [pace, setPace] = useState<"day" | "week">("day");
   const addAlloc = useMutation({
     mutationFn: (v: any) => budgetsApi.create({ ...v, monthlyPeriodId: id }),
     onSuccess: () => { qc.invalidateQueries(); setAllocOpen(false); message.success(th.common.saved); }
-  });
-  const addTxn = useMutation({
-    mutationFn: (v: any) => txnsApi.create({ ...v, monthlyPeriodId: id, categoryId: active?.categoryId, transactionDate: todayDateOnly() }),
-    onSuccess: () => { qc.invalidateQueries(); message.success(th.common.added); }
   });
 
   if (!id) return <EmptyState description={th.empty.createMonthFirst} />;
 
   return (
     <div>
-      <PageHeader title={th.budgets.title} extra={<Button type="primary" onClick={() => setAllocOpen(true)}>{th.budgets.setAllocation}</Button>} />
+      <PageHeader
+        title={th.budgets.title}
+        extra={
+          <>
+            {(list.data ?? []).length > 0 && (
+              <div className="flex items-center gap-2">
+                <span className="hidden text-sm text-[var(--mf-text-secondary)] sm:inline">{th.budgets.paceLabel}</span>
+                <Segmented value={pace} onChange={(v) => setPace(v as "day" | "week")} options={[{ label: th.budgets.paceDay, value: "day" }, { label: th.budgets.paceWeek, value: "week" }]} />
+              </div>
+            )}
+            <Button type="primary" onClick={() => setAllocOpen(true)}>{th.budgets.setAllocation}</Button>
+          </>
+        }
+      />
       {(list.data ?? []).length === 0 ? (
         <EmptyState description={th.budgets.empty} cta={th.budgets.setAllocation} onClick={() => setAllocOpen(true)} />
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {(list.data ?? []).map((b) => (
-            <BudgetProgressCard key={b.budgetAllocationId} name={translateCategoryName(b.categoryName)} allocated={b.allocatedAmount} used={b.used} remainingDays={month?.monthProgress.remainingDays} onClick={() => setActive(b)} />
+            <BudgetProgressCard key={b.budgetAllocationId} name={translateCategoryName(b.categoryName)} allocated={b.allocatedAmount} used={b.used} remainingDays={month?.monthProgress.remainingDays} pace={pace} onClick={() => setActive(b)} />
           ))}
         </div>
       )}
@@ -55,21 +63,7 @@ export function BudgetsPage() {
           <Button type="primary" htmlType="submit" loading={addAlloc.isPending} block size="large">{th.common.save}</Button>
         </Form>
       </Modal>
-      <Drawer title={active ? translateCategoryName(active.categoryName) : ""} open={!!active} onClose={() => setActive(null)} width={420}>
-        <div className="mb-4 flex flex-col gap-2">
-          {(txns.data ?? []).map((t: Txn) => (
-            <div key={t.transactionId} className="flex justify-between border-b border-[var(--mf-border)] py-2">
-              <span className="text-[var(--mf-text)]">{t.description}</span>
-              <span className="tabular font-medium">{formatMoney(t.amount)}</span>
-            </div>
-          ))}
-        </div>
-        <Form layout="vertical" onFinish={(v) => addTxn.mutate(v)}>
-          <Form.Item name="amount" label={th.common.amount} rules={[{ required: true }]}><MoneyInput /></Form.Item>
-          <Form.Item name="description" label={th.quickAdd.description} rules={[{ required: true }]}><Input size="large" /></Form.Item>
-          <Button type="primary" htmlType="submit" loading={addTxn.isPending} block size="large">{th.budgets.addTxn}</Button>
-        </Form>
-      </Drawer>
+      <BudgetTxnDrawer open={!!active} title={active ? translateCategoryName(active.categoryName) : ""} monthlyPeriodId={id} categoryId={active?.categoryId} onClose={() => setActive(null)} />
     </div>
   );
 }

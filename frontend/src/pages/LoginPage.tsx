@@ -36,7 +36,10 @@ export function LoginPage() {
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--mf-primary)] text-xl text-white">
             <WalletOutlined />
           </div>
-          <Typography.Title level={3} className="!mb-1 !text-[var(--mf-navy)]">{th.brand}</Typography.Title>
+          <Typography.Title level={3} className="!mb-1 !leading-tight !text-[var(--mf-navy)]">
+            <span className="block">{th.brandLockup.line1}</span>
+            <span className="block">{th.brandLockup.line2}</span>
+          </Typography.Title>
           <Typography.Text className="text-[var(--mf-text-secondary)]">{th.tagline}</Typography.Text>
         </div>
         <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
