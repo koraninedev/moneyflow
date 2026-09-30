@@ -50,7 +50,7 @@ export function BudgetsPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {(list.data ?? []).map((b) => (
-            <BudgetProgressCard key={b.budgetAllocationId} name={translateCategoryName(b.categoryName)} allocated={b.allocatedAmount} used={b.used} remainingDays={month?.monthProgress.remainingDays} pace={pace} onClick={() => setActive(b)} />
+            <BudgetProgressCard key={b.budgetAllocationId} name={translateCategoryName(b.categoryName)} allocated={b.allocatedAmount} used={b.used} todayUsed={b.todayUsed} remainingDays={month?.monthProgress.remainingDays} pace={pace} onClick={() => setActive(b)} />
           ))}
         </div>
       )}
@@ -63,7 +63,7 @@ export function BudgetsPage() {
           <Button type="primary" htmlType="submit" loading={addAlloc.isPending} block size="large">{th.common.save}</Button>
         </Form>
       </Modal>
-      <BudgetTxnDrawer open={!!active} title={active ? translateCategoryName(active.categoryName) : ""} monthlyPeriodId={id} categoryId={active?.categoryId} onClose={() => setActive(null)} />
+      <BudgetTxnDrawer open={!!active} title={active ? translateCategoryName(active.categoryName) : ""} monthlyPeriodId={id} categoryId={active?.categoryId} allocated={active?.allocatedAmount} used={active?.used} remainingDays={month?.monthProgress.remainingDays} onClose={() => setActive(null)} />
     </div>
   );
 }

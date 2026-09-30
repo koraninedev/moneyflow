@@ -13,7 +13,7 @@ public sealed record UpdateCategoryRequest(string Name, string? Classification, 
 public sealed record MonthListItemDto(int MonthlyPeriodId, int Year, int Month, decimal TotalIncome, decimal TotalExpenses, decimal TotalSavings, decimal Remaining);
 public sealed record CreateMonthRequest(int Year, int Month, string Mode);
 public sealed record MonthProgressDto(int DayOfMonth, int DaysInMonth, int RemainingDays, double PercentElapsed, DateTime PeriodStart, DateTime PeriodEnd);
-public sealed record CategoryBudgetDto(int CategoryId, string Name, decimal Allocated, decimal Used, decimal Remaining);
+public sealed record CategoryBudgetDto(int CategoryId, string Name, decimal Allocated, decimal Used, decimal Remaining, decimal TodayUsed);
 public sealed record MonthSummaryDto(int MonthlyPeriodId, int Year, int Month, decimal TotalIncome, decimal TotalExpenses, decimal FixedExpenses, decimal VariableExpenses, decimal TotalBudgetAllocation, decimal TotalBudgetActualUsed, decimal TotalSavings, decimal Remaining, int PaidExpenseCount, int UnpaidExpenseCount, MonthProgressDto MonthProgress, List<CategoryBudgetDto> CategoryBudgets);
 
 public sealed record IncomeEntryDto(int IncomeEntryId, int MonthlyPeriodId, int CategoryId, string CategoryName, string Name, decimal Amount, DateTime IncomeDate, bool IsRecurring, string? Note, bool IsActive);
@@ -27,7 +27,7 @@ public sealed record UpdateExpenseRequest(int CategoryId, string Name, decimal A
 public sealed record SetPaidRequest(bool IsPaid, DateTime? PaidDate);
 public sealed record ReorderExpensesRequest(int MonthlyPeriodId, List<int> OrderedIds);
 
-public sealed record BudgetAllocationDto(int BudgetAllocationId, int MonthlyPeriodId, int CategoryId, string CategoryName, decimal AllocatedAmount, decimal Used, decimal Remaining, string? Note);
+public sealed record BudgetAllocationDto(int BudgetAllocationId, int MonthlyPeriodId, int CategoryId, string CategoryName, decimal AllocatedAmount, decimal Used, decimal Remaining, decimal TodayUsed, string? Note);
 public sealed record CreateBudgetRequest(int MonthlyPeriodId, int CategoryId, decimal AllocatedAmount, string? Note);
 public sealed record UpdateBudgetRequest(decimal AllocatedAmount, string? Note);
 

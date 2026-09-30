@@ -83,7 +83,7 @@ export function DashboardPage() {
           </div>
         </Card>
         {data.categoryBudgets.map((b) => (
-          <BudgetProgressCard key={b.categoryId} name={translateCategoryName(b.name)} allocated={b.allocated} used={b.used} remainingDays={data.monthProgress.remainingDays} onClick={() => setActiveBudget(b)} />
+          <BudgetProgressCard key={b.categoryId} name={translateCategoryName(b.name)} allocated={b.allocated} used={b.used} todayUsed={b.todayUsed} remainingDays={data.monthProgress.remainingDays} onClick={() => setActiveBudget(b)} />
         ))}
       </div>
 
@@ -134,7 +134,7 @@ export function DashboardPage() {
       {data.totalIncome === 0 && data.totalExpenses === 0 && (
         <EmptyState description={th.dashboard.emptyAllTitle} cta={`+ ${th.dashboard.emptyAllCta}`} onClick={() => nav("/income")} />
       )}
-      <BudgetTxnDrawer open={!!activeBudget} title={activeBudget ? translateCategoryName(activeBudget.name) : ""} monthlyPeriodId={id} categoryId={activeBudget?.categoryId} onClose={() => setActiveBudget(null)} />
+      <BudgetTxnDrawer open={!!activeBudget} title={activeBudget ? translateCategoryName(activeBudget.name) : ""} monthlyPeriodId={id} categoryId={activeBudget?.categoryId} allocated={activeBudget?.allocated} used={activeBudget?.used} remainingDays={data.monthProgress.remainingDays} onClose={() => setActiveBudget(null)} />
     </div>
   );
 }

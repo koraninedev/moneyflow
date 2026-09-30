@@ -41,6 +41,16 @@ public class AccountingTests
     }
 
     [Fact]
+    public void DailyAllowance_IncludesTodaySpendInLeftover()
+    {
+        Assert.Equal(190m, Accounting.DailyAllowance(remaining: 1500m, todayUsed: 400m, remainingDays: 10));
+        Assert.True(Accounting.OverDailyPace(400m, 190m));
+        Assert.False(Accounting.OverDailyPace(150m, 150m));
+        Assert.Equal(0m, Accounting.DailyAllowance(remaining: -100m, todayUsed: 50m, remainingDays: 5));
+        Assert.Equal(0m, Accounting.DailyAllowance(remaining: 1500m, todayUsed: 0m, remainingDays: 0));
+    }
+
+    [Fact]
     public void CopyRecurring_DueDayClippedToMonthLength()
     {
         var dueDay = 31;

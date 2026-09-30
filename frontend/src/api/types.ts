@@ -2,7 +2,7 @@ export type User = { userId: number; email: string; displayName: string; periodS
 export type LoginResponse = { token: string; expiresAt: string; user: User };
 export type Category = { categoryId: number; name: string; type: string; classification?: string | null; trackingMode: string; icon?: string | null; color?: string | null; sortOrder: number; isActive: boolean };
 export type MonthProgress = { dayOfMonth: number; daysInMonth: number; remainingDays: number; percentElapsed: number; periodStart: string; periodEnd: string };
-export type CategoryBudget = { categoryId: number; name: string; allocated: number; used: number; remaining: number };
+export type CategoryBudget = { categoryId: number; name: string; allocated: number; used: number; remaining: number; todayUsed: number };
 export type MonthSummary = {
   monthlyPeriodId: number; year: number; month: number; totalIncome: number; totalExpenses: number;
   fixedExpenses: number; variableExpenses: number; totalBudgetAllocation: number; totalBudgetActualUsed: number;
@@ -12,7 +12,7 @@ export type MonthSummary = {
 export type MonthListItem = { monthlyPeriodId: number; year: number; month: number; totalIncome: number; totalExpenses: number; totalSavings: number; remaining: number };
 export type Income = { incomeEntryId: number; monthlyPeriodId: number; categoryId: number; categoryName: string; name: string; amount: number; incomeDate: string; isRecurring: boolean; note?: string | null; isActive: boolean };
 export type Expense = { expenseEntryId: number; monthlyPeriodId: number; categoryId: number; categoryName: string; name: string; amount: number; classification: string; dueDate?: string | null; isPaid: boolean; paidDate?: string | null; isRecurring: boolean; note?: string | null; sortOrder: number };
-export type Budget = { budgetAllocationId: number; monthlyPeriodId: number; categoryId: number; categoryName: string; allocatedAmount: number; used: number; remaining: number; note?: string | null };
+export type Budget = { budgetAllocationId: number; monthlyPeriodId: number; categoryId: number; categoryName: string; allocatedAmount: number; used: number; remaining: number; todayUsed: number; note?: string | null };
 export type Txn = { transactionId: number; monthlyPeriodId: number; categoryId: number; categoryName: string; amount: number; transactionDate: string; description: string; note?: string | null };
 export type SavingGoal = { savingGoalId: number; name: string; targetAmount?: number | null; targetDate?: string | null; plannedMonthlyContribution?: number | null; accumulatedAmount: number; isActive: boolean };
 export type SavingContribution = { savingContributionId: number; monthlyPeriodId: number; savingGoalId: number; savingGoalName: string; amount: number; contributionDate: string; note?: string | null };

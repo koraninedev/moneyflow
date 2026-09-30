@@ -165,12 +165,13 @@ public sealed class MonthsService(IMonthlyPeriodsRepository periods, IRecurringT
         var user = await users.GetByIdAsync(p.UserId) ?? throw new NotFoundException();
         var today = PayCycle.TodayInBangkok();
         var progress = PayCycle.Progress(today, p.Year, p.Month, user.PeriodStartDay, user.SkipWeekendPayday);
-        var budgetRows = await budgets.GetByPeriodAsync(p.UserId, p.MonthlyPeriodId);
+        var budgetRows = await budgets.GetByPeriodAsync(p.UserId, p.MonthlyPeriodId, today);
         var categoryBudgets = budgetRows.Select(r =>
         {
             decimal allocated = r.AllocatedAmount;
             decimal used = r.Used;
-            return new CategoryBudgetDto((int)r.CategoryId, (string)r.CategoryName, allocated, used, Accounting.CategoryRemaining(allocated, used));
+            decimal todayUsed = r.TodayUsed;
+            return new CategoryBudgetDto((int)r.CategoryId, (string)r.CategoryName, allocated, used, Accounting.CategoryRemaining(allocated, used), todayUsed);
         }).ToList();
         return new MonthSummaryDto(p.MonthlyPeriodId, p.Year, p.Month, row.TotalIncome, totalExpenses, row.FixedExpenses, row.VariableExpenses, row.TotalBudgetAllocation, row.TotalBudgetActualUsed, row.TotalSavings, remaining, row.PaidExpenseCount, row.UnpaidExpenseCount, new MonthProgressDto(progress.DayOfPeriod, progress.DaysInPeriod, progress.RemainingDays, progress.PercentElapsed, progress.Start, progress.End), categoryBudgets);
     }
@@ -270,11 +271,11 @@ public sealed class BudgetsService(IBudgetAllocationsRepository repo, IMonthlyPe
     public async Task<IEnumerable<BudgetAllocationDto>> ListAsync(int userId, int monthlyPeriodId)
     {
         if (await periods.GetByIdAsync(userId, monthlyPeriodId) is null) throw new NotFoundException();
-        var rows = await repo.GetByPeriodAsync(userId, monthlyPeriodId);
+        var rows = await repo.GetByPeriodAsync(userId, monthlyPeriodId, PayCycle.TodayInBangkok());
         return rows.Select(r =>
         {
-            decimal allocated = r.AllocatedAmount; decimal used = r.Used;
-            return new BudgetAllocationDto((int)r.BudgetAllocationId, (int)r.MonthlyPeriodId, (int)r.CategoryId, (string)r.CategoryName, allocated, used, Accounting.CategoryRemaining(allocated, used), (string?)r.Note);
+            decimal allocated = r.AllocatedAmount; decimal used = r.Used; decimal todayUsed = r.TodayUsed;
+            return new BudgetAllocationDto((int)r.BudgetAllocationId, (int)r.MonthlyPeriodId, (int)r.CategoryId, (string)r.CategoryName, allocated, used, Accounting.CategoryRemaining(allocated, used), todayUsed, (string?)r.Note);
         });
     }
 
@@ -288,7 +289,7 @@ public sealed class BudgetsService(IBudgetAllocationsRepository repo, IMonthlyPe
         if (await repo.GetByPeriodAndCategoryAsync(userId, request.MonthlyPeriodId, request.CategoryId) is not null)
             throw new ConflictException("Allocation already exists for this category and month.");
         var id = await repo.InsertAsync(new BudgetAllocation { UserId = userId, MonthlyPeriodId = request.MonthlyPeriodId, CategoryId = request.CategoryId, AllocatedAmount = request.AllocatedAmount, Note = request.Note });
-        return new BudgetAllocationDto(id, request.MonthlyPeriodId, request.CategoryId, cat.Name, request.AllocatedAmount, 0, request.AllocatedAmount, request.Note);
+        return new BudgetAllocationDto(id, request.MonthlyPeriodId, request.CategoryId, cat.Name, request.AllocatedAmount, 0, request.AllocatedAmount, 0, request.Note);
     }
 
     public async Task<BudgetAllocationDto> UpdateAsync(int userId, int id, UpdateBudgetRequest request)
@@ -297,7 +298,7 @@ public sealed class BudgetsService(IBudgetAllocationsRepository repo, IMonthlyPe
         existing.AllocatedAmount = request.AllocatedAmount; existing.Note = request.Note;
         await repo.UpdateAsync(existing);
         var cat = await categories.GetByIdAsync(userId, existing.CategoryId);
-        return new BudgetAllocationDto(existing.BudgetAllocationId, existing.MonthlyPeriodId, existing.CategoryId, cat?.Name ?? "", existing.AllocatedAmount, 0, existing.AllocatedAmount, existing.Note);
+        return new BudgetAllocationDto(existing.BudgetAllocationId, existing.MonthlyPeriodId, existing.CategoryId, cat?.Name ?? "", existing.AllocatedAmount, 0, existing.AllocatedAmount, 0, existing.Note);
     }
 
     public async Task DeleteAsync(int userId, int id)

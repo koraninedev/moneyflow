@@ -14,4 +14,13 @@ public static class Accounting
         simpleExpenses + transactionExpenses;
 
     public static decimal CategoryRemaining(decimal allocated, decimal used) => allocated - used;
+
+    public static decimal DailyAllowance(decimal remaining, decimal todayUsed, int remainingDays)
+    {
+        if (remainingDays <= 0) return 0m;
+        var leftoverIncludingToday = remaining + todayUsed;
+        return leftoverIncludingToday > 0m ? leftoverIncludingToday / remainingDays : 0m;
+    }
+
+    public static bool OverDailyPace(decimal todayUsed, decimal dailyAllowance) => todayUsed > dailyAllowance;
 }

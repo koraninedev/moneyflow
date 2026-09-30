@@ -122,7 +122,12 @@ export const th = {
     paceDay: "รายวัน",
     paceWeek: "รายสัปดาห์",
     dailyPace: (amount: string) => `เฉลี่ยวันละ ${amount}`,
-    weeklyPace: (amount: string) => `เฉลี่ยสัปดาห์ละ ${amount}`
+    weeklyPace: (amount: string) => `เฉลี่ยสัปดาห์ละ ${amount}`,
+    todayUsed: (used: string, cap: string) => `วันนี้ใช้ ${used} จากเฉลี่ยวันละ ${cap}`,
+    todayOver: (used: string, cap: string) => `วันนี้ใช้ ${used} เกินเฉลี่ยวันละ ${cap}`,
+    todayQuota: "โควตาวันนี้",
+    overDailyHint: (over: string) => `รายการนี้จะทำให้เกินเฉลี่ยต่อวัน ${over}`,
+    overDailyToast: (used: string, cap: string) => `วันนี้ใช้ไป ${used} เกินเฉลี่ยวันละ ${cap}`
   },
   savings: {
     title: "เงินออม",

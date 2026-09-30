@@ -266,7 +266,7 @@ public sealed class ExpenseEntriesRepository(ISqlConnectionFactory factory) : IE
 
 public interface IBudgetAllocationsRepository
 {
-    Task<IEnumerable<dynamic>> GetByPeriodAsync(int userId, int monthlyPeriodId);
+    Task<IEnumerable<dynamic>> GetByPeriodAsync(int userId, int monthlyPeriodId, DateTime today);
     Task<BudgetAllocation?> GetByIdAsync(int userId, int budgetAllocationId);
     Task<BudgetAllocation?> GetByPeriodAndCategoryAsync(int userId, int monthlyPeriodId, int categoryId);
     Task<int> InsertAsync(BudgetAllocation allocation);
@@ -276,16 +276,17 @@ public interface IBudgetAllocationsRepository
 
 public sealed class BudgetAllocationsRepository(ISqlConnectionFactory factory) : IBudgetAllocationsRepository
 {
-    public async Task<IEnumerable<dynamic>> GetByPeriodAsync(int userId, int monthlyPeriodId)
+    public async Task<IEnumerable<dynamic>> GetByPeriodAsync(int userId, int monthlyPeriodId, DateTime today)
     {
         using var c = factory.CreateConnection();
         return await c.QueryAsync("""
             SELECT ba.BudgetAllocationId, ba.MonthlyPeriodId, ba.CategoryId, c.Name AS CategoryName, ba.AllocatedAmount, ba.Note,
-                   ISNULL((SELECT SUM(t.Amount) FROM Transactions t WHERE t.MonthlyPeriodId = ba.MonthlyPeriodId AND t.CategoryId = ba.CategoryId), 0) AS Used
+                   ISNULL((SELECT SUM(t.Amount) FROM Transactions t WHERE t.MonthlyPeriodId = ba.MonthlyPeriodId AND t.CategoryId = ba.CategoryId), 0) AS Used,
+                   ISNULL((SELECT SUM(t.Amount) FROM Transactions t WHERE t.MonthlyPeriodId = ba.MonthlyPeriodId AND t.CategoryId = ba.CategoryId AND t.TransactionDate = @Today), 0) AS TodayUsed
             FROM BudgetAllocations ba INNER JOIN Categories c ON c.CategoryId = ba.CategoryId
             WHERE ba.UserId = @UserId AND ba.MonthlyPeriodId = @MonthlyPeriodId
             ORDER BY c.SortOrder, c.Name
-            """, new { UserId = userId, MonthlyPeriodId = monthlyPeriodId });
+            """, new { UserId = userId, MonthlyPeriodId = monthlyPeriodId, Today = today.Date });
     }
 
     public async Task<BudgetAllocation?> GetByIdAsync(int userId, int budgetAllocationId)
