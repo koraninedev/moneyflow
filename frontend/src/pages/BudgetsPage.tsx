@@ -63,7 +63,7 @@ export function BudgetsPage() {
           <Button type="primary" htmlType="submit" loading={addAlloc.isPending} block size="large">{th.common.save}</Button>
         </Form>
       </Modal>
-      <BudgetTxnDrawer open={!!active} title={active ? translateCategoryName(active.categoryName) : ""} monthlyPeriodId={id} categoryId={active?.categoryId} allocated={active?.allocatedAmount} used={active?.used} remainingDays={month?.monthProgress.remainingDays} onClose={() => setActive(null)} />
+      <BudgetTxnDrawer open={!!active} title={active ? translateCategoryName(active.categoryName) : ""} monthlyPeriodId={id} categoryId={active?.categoryId} allocated={active?.allocatedAmount} used={active?.used} remainingDays={month?.monthProgress.remainingDays} periodStart={month?.monthProgress.periodStart} periodEnd={month?.monthProgress.periodEnd} onClose={() => setActive(null)} />
     </div>
   );
 }

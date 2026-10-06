@@ -134,7 +134,7 @@ export function DashboardPage() {
       {data.totalIncome === 0 && data.totalExpenses === 0 && (
         <EmptyState description={th.dashboard.emptyAllTitle} cta={`+ ${th.dashboard.emptyAllCta}`} onClick={() => nav("/income")} />
       )}
-      <BudgetTxnDrawer open={!!activeBudget} title={activeBudget ? translateCategoryName(activeBudget.name) : ""} monthlyPeriodId={id} categoryId={activeBudget?.categoryId} allocated={activeBudget?.allocated} used={activeBudget?.used} remainingDays={data.monthProgress.remainingDays} onClose={() => setActiveBudget(null)} />
+      <BudgetTxnDrawer open={!!activeBudget} title={activeBudget ? translateCategoryName(activeBudget.name) : ""} monthlyPeriodId={id} categoryId={activeBudget?.categoryId} allocated={activeBudget?.allocated} used={activeBudget?.used} remainingDays={data.monthProgress.remainingDays} periodStart={data.monthProgress.periodStart} periodEnd={data.monthProgress.periodEnd} onClose={() => setActiveBudget(null)} />
     </div>
   );
 }

@@ -29,6 +29,18 @@ public class TrackingModeTests
             svc.CreateAsync(1, new CreateTransactionRequest(1, 3, 100, DateTime.UtcNow, "oops", null)));
         Assert.Contains("BudgetVsActual", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
+
+    [Fact]
+    public async Task Transaction_Rejected_WhenDateIsFuture()
+    {
+        var categories = new StubCategories(new Category { CategoryId = 6, UserId = 1, Type = CategoryType.Expense, TrackingMode = TrackingMode.BudgetVsActual, Name = "Food" });
+        var periods = new StubPeriods(new MonthlyPeriod { MonthlyPeriodId = 1, UserId = 1, Year = 2026, Month = 9 });
+        var svc = new TransactionsService(new StubTransactions(), periods, categories);
+        var future = PayCycle.TodayInBangkok().AddDays(1);
+        var ex = await Assert.ThrowsAsync<ValidationException>(() =>
+            svc.CreateAsync(1, new CreateTransactionRequest(1, 6, 100, future, "later", null)));
+        Assert.Contains("future", ex.Message, StringComparison.OrdinalIgnoreCase);
+    }
 }
 
 file sealed class StubCategories(Category category) : ICategoriesRepository

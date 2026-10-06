@@ -319,6 +319,7 @@ public sealed class TransactionsService(ITransactionsRepository repo, IMonthlyPe
     public async Task<TransactionDto> CreateAsync(int userId, CreateTransactionRequest request)
     {
         if (request.Amount <= 0) throw new ValidationException("Amount must be greater than 0.", new Dictionary<string, string> { ["amount"] = "Must be greater than 0" });
+        EnsureNotFuture(request.TransactionDate);
         if (await periods.GetByIdAsync(userId, request.MonthlyPeriodId) is null) throw new NotFoundException();
         var cat = await EnsureBudgetCategory(userId, request.CategoryId);
         var id = await repo.InsertAsync(new TransactionEntry { UserId = userId, MonthlyPeriodId = request.MonthlyPeriodId, CategoryId = request.CategoryId, Amount = request.Amount, TransactionDate = request.TransactionDate.Date, Description = request.Description, Note = request.Note });
@@ -339,6 +340,8 @@ public sealed class TransactionsService(ITransactionsRepository repo, IMonthlyPe
 
     public async Task<TransactionDto> UpdateAsync(int userId, int id, UpdateTransactionRequest request)
     {
+        if (request.Amount <= 0) throw new ValidationException("Amount must be greater than 0.", new Dictionary<string, string> { ["amount"] = "Must be greater than 0" });
+        EnsureNotFuture(request.TransactionDate);
         var existing = await repo.GetByIdAsync(userId, id) ?? throw new NotFoundException();
         var cat = await EnsureBudgetCategory(userId, request.CategoryId);
         existing.CategoryId = request.CategoryId; existing.Amount = request.Amount; existing.TransactionDate = request.TransactionDate.Date; existing.Description = request.Description; existing.Note = request.Note;
@@ -356,6 +359,12 @@ public sealed class TransactionsService(ITransactionsRepository repo, IMonthlyPe
         var cat = await categories.GetByIdAsync(userId, categoryId) ?? throw new ValidationException("Invalid category.");
         if (cat.TrackingMode != TrackingMode.BudgetVsActual) throw new ValidationException("Category must have TrackingMode BudgetVsActual.");
         return cat;
+    }
+
+    private static void EnsureNotFuture(DateTime date)
+    {
+        if (date.Date > PayCycle.TodayInBangkok())
+            throw new ValidationException("Cannot record a future date.", new Dictionary<string, string> { ["transactionDate"] = "Cannot be in the future" });
     }
 }
 
